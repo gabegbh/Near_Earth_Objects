@@ -87,7 +87,7 @@ class NEODatabase:
                 return neo
         return None
 
-    def query(self, filters=()):
+    def query(self, args):  #date=None, dist=None, vel=None, diam=None, haz=None
         """Query close approaches to generate those that match a collection of filters.
 
         This generates a stream of `CloseApproach` objects that match all of the
@@ -101,6 +101,54 @@ class NEODatabase:
         :param filters: A collection of filters capturing user-specified criteria.
         :return: A stream of matching `CloseApproach` objects.
         """
+
+        #print(args.items())
         # TODO: Generate `CloseApproach` objects that match all of the filters.
-        for approach in self._approaches:
-            yield approach
+        fil_app = self._approaches
+
+        if 'date' in args:
+            d = args['date']
+            if d[0]:
+                fil_app = set(filter(lambda app: app.time.date() == d[0], fil_app))
+            elif d[1] and d[2]:
+                fil_app = set(filter(lambda app: d[1] <= app.time.date() <= d[2], fil_app))
+            elif d[1]:
+                fil_app = set(filter(lambda app: app.time.date() >= d[1], fil_app))
+            else:
+                fil_app = set(filter(lambda app: app.time.date() <= d[2], fil_app))
+
+        if 'dist' in args:
+            d = args['dist']
+            if d[0] and d[1]:
+                fil_app = set(filter(lambda app:  d[0] <= app.distance <= d[1], fil_app))
+            elif d[0]:
+                fil_app = set(filter(lambda app: app.distance >= d[0], fil_app))
+            else:
+                fil_app = set(filter(lambda app: app.distance <= d[1], fil_app))
+
+        if 'vel' in args:
+            v = args['vel']
+            if v[0] and v[1]:
+                fil_app = set(filter(lambda app: v[0] <= app.velocity <= v[1], fil_app))
+            elif v[0]:
+                fil_app = set(filter(lambda app: app.velocity >= v[0], fil_app))
+            else:
+                fil_app = set(filter(lambda app: app.velocity <= v[1], fil_app))
+            
+        if 'diam' in args:
+            d = args['diam']
+            if d[0] and d[1]:
+                fil_app = set(filter(lambda app: d[0] <= app.neo.diameter <= d[1], fil_app))
+            elif d[0]:
+                fil_app = set(filter(lambda app: app.neo.diameter >= d[0], fil_app))
+            else:
+                fil_app = set(filter(lambda app: app.neo.diameter <= d[1], fil_app))
+            
+        if 'haz' in args:
+            if args['haz']:
+                fil_app = set(filter(lambda app: app.neo.hazardous, fil_app))
+            else: 
+                fil_app = set(filter(lambda app: not app.neo.hazardous, fil_app))
+            
+        for app in fil_app:
+            yield app
