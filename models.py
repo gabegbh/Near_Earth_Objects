@@ -45,7 +45,7 @@ class NearEarthObject:
         self.hazardous = False
 
         self.__dict__.update(kwargs)
-        
+        self.diameter = float(self.diameter)
         self.approaches = []
 
     @property
@@ -86,13 +86,16 @@ class CloseApproach:
         :param kwargs: A dictionary of excess keyword arguments supplied to the constructor.
         """
 
-        self._designation = ''
+        self.designation = ''
         self.time = None
         self.distance = 0.0
         self.velocity = 0.0
         self.neo = None
 
         self.__dict__.update(kwargs)
+
+        self.distance = float(self.distance)
+        self.velocity = float(self.velocity)
 
         self.time = cd_to_datetime(self.time)
 
