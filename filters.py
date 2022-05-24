@@ -17,6 +17,7 @@ iterator.
 You'll edit this file in Tasks 3a and 3c.
 """
 import operator
+import itertools
 
 
 class UnsupportedCriterionError(NotImplementedError):
@@ -74,7 +75,6 @@ def create_filters(
     return ret
         
 
-
 def limit(iterator, n=None):
     """Produce a limited stream of values from an iterator.
 
@@ -84,5 +84,8 @@ def limit(iterator, n=None):
     :param n: The maximum number of values to produce.
     :yield: The first (at most) `n` values from the iterator.
     """
-    # TODO: Produce at most `n` values from the given iterator.
-    return iterator
+    ret = iterator
+    if n and n > 0:
+        ret = itertools.islice(iterator, n)
+
+    return ret

@@ -102,8 +102,6 @@ class NEODatabase:
         :return: A stream of matching `CloseApproach` objects.
         """
 
-        #print(args.items())
-        # TODO: Generate `CloseApproach` objects that match all of the filters.
         fil_app = self._approaches
 
         if 'date' in args:
