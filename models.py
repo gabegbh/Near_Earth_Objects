@@ -1,22 +1,3 @@
-"""Represent models for near-Earth objects and their close approaches.
-
-The `NearEarthObject` class represents a near-Earth object. Each has a unique
-primary designation, an optional unique name, an optional diameter, and a flag
-for whether the object is potentially hazardous.
-
-The `CloseApproach` class represents a close approach to Earth by an NEO. Each
-has an approach datetime, a nominal approach distance, and a relative approach
-velocity.
-
-A `NearEarthObject` maintains a collection of its close approaches, and a
-`CloseApproach` maintains a reference to its NEO.
-
-The functions that construct these objects use information extracted from the
-data files from NASA, so these objects should be able to handle all of the
-quirks of the data set, such as missing names and unknown diameters.
-
-You'll edit this file in Task 1.
-"""
 from helpers import cd_to_datetime, datetime_to_str
 
 

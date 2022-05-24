@@ -1,22 +1,3 @@
-"""Provide filters for querying close approaches and limit the generated results.
-
-The `create_filters` function produces a collection of objects that is used by
-the `query` method to generate a stream of `CloseApproach` objects that match
-all of the desired criteria. The arguments to `create_filters` are provided by
-the main module and originate from the user's command-line options.
-
-This function can be thought to return a collection of instances of subclasses
-of `AttributeFilter` - a 1-argument callable (on a `CloseApproach`) constructed
-from a comparator (from the `operator` module), a reference value, and a class
-method `get` that subclasses can override to fetch an attribute of interest from
-the supplied `CloseApproach`.
-
-The `limit` function simply limits the maximum number of values produced by an
-iterator.
-
-You'll edit this file in Tasks 3a and 3c.
-"""
-import operator
 import itertools
 
 
@@ -48,6 +29,11 @@ def create_filters(
     because the main module directly passes this result to that method. For now,
     this can be thought of as a collection of `AttributeFilter`s.
 
+    If a param is taken that does not work i.e. start_date after end_date, it attaches 
+    an unsupported_parameter arg to the filters list along with a message of the 
+    infraction. The db.query function will see it and raise the warning message and 
+    rightly return an empty results list without doing the filtering.
+
     :param date: A `date` on which a matching `CloseApproach` occurs.
     :param start_date: A `date` on or after which a matching `CloseApproach` occurs.
     :param end_date: A `date` on or before which a matching `CloseApproach` occurs.
@@ -60,19 +46,40 @@ def create_filters(
     :param hazardous: Whether the NEO of a matching `CloseApproach` is potentially hazardous.
     :return: A collection of filters for use with `query`.
     """
-    ret = {
+
+    filters = {
     'date' : (date, start_date, end_date),
     'dist' : (distance_min, distance_max),
     'vel' : (velocity_min, velocity_max),
     'diam' : (diameter_min, diameter_max)
     }
 
-    ret = dict(filter(lambda v: any(v[1]), ret.items()))
+    d = filters['date']
+    if d[1] and d[2]:
+        if d[2] < d[1]:
+            filters['unsup_params'] = f"Your end_date ({d[2]}) cannot be earlier than your start_date ({d[1]}). Please refine your filter arguments"
+
+    d = filters['dist']
+    if all([d[0], d[1]]):
+        if d[1] < d[0]:
+            filters['unsup_params'] = f"Your max_distance ({d[1]}) cannot be less than your min_distance ({d[0]}). Please refine your filter arguments"
+    
+    d = filters['vel']
+    if all([d[0], d[1]]):
+        if d[1] < d[0]:
+            filters['unsup_params'] = f"Your max_velocity ({d[1]}) cannot be less than your min_velocity ({d[0]}). Please refine your filter arguments"
+    
+    d = filters['diam']
+    if all([d[0], d[1]]):
+        if d[1] < d[0]:
+            filters['unsup_params'] = f"Your max_diameter ({d[1]}) cannot be less than your min_diameter ({d[0]}). Please refine your filter arguments"
+
+    filters = dict(filter(lambda v: any(v[1]), filters.items()))
 
     if hazardous != None:
-        ret['haz'] = hazardous
+        filters['haz'] = hazardous
 
-    return ret
+    return filters
         
 
 def limit(iterator, n=None):

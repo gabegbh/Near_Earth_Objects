@@ -1,15 +1,3 @@
-"""Write a stream of close approaches to CSV or to JSON.
-
-This module exports two functions: `write_to_csv` and `write_to_json`, each of
-which accept an `results` stream of close approaches and a path to which to
-write the data.
-
-These functions are invoked by the main module with the output of the `limit`
-function and the filename supplied by the user at the command line. The file's
-extension determines which of these functions is used.
-
-You'll edit this file in Part 4.
-"""
 import csv
 import json
 
@@ -35,9 +23,6 @@ def write_to_csv(results, filename):
         for ca in results:
             writter.writerow(ca.serialize(doc_type='csv'))
 
-    # TODO: Write the results to a CSV file, following the specification in the instructions.
-
-
 def write_to_json(results, filename):
     """Write an iterable of `CloseApproach` objects to a JSON file.
 
@@ -50,5 +35,5 @@ def write_to_json(results, filename):
     :param filename: A Path-like object pointing to where the data should be saved.
     """
     with open(filename, 'w') as w:
-        ret = [ca.serialize(doc_type='json') for ca in results]
-        json.dump(ret, w, indent='')
+        serialized_ca = [ca.serialize(doc_type='json') for ca in results]
+        json.dump(serialized_ca, w, indent='')
